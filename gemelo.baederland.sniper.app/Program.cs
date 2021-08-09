@@ -16,7 +16,7 @@ namespace gemelo.baederland.sniper.app
         {
             Console.WriteLine("Baederland Sniper");
 
-            SendEmail("Baederland Sniper", "", "Start");
+            SendEmail("Baederland Sniper wurde gestartet", "http://www.gemelo.de", "[Start]");
 
             while (true)
             {
@@ -68,16 +68,32 @@ namespace gemelo.baederland.sniper.app
 
         public static void SendEmail(string subject, string url, string content)
         {
-            string to = "baederland-sniper@tr.gemelo.de";
-            string from = "baederland-sniper@tr.gemelo.de";
+            string to = "reinhold@gemelo.de";
+            //string to = "thies@ampelsprinter.de";
+            //string to = "baederland-sniper@tr.gemelo.de";
+            string from = "reinhold@gemelo.de";
             MailMessage message = new MailMessage(from, to);
             message.Subject = subject;
-            message.Body = $"{url}\n{content}";
+            message.Body = 
+                $"Lieber Bäderland Sniper Empfänger.\n\n" +
+                $"wir haben folgendes neues Ereignis für dich festgestellt:\n\n" +
+                $"{subject}\n\n" +
+                $"mit folgendem Inhalt: {content}\n\n" +
+                $"auf der URL: {url}\n\n\n" +
+                $"Herzliche Grüße\n\n" +
+                $"dein automatischer Bäderlandkursefinder";
+            
             SmtpClient client = new SmtpClient("PETE-MAIL2019.pete.local");
             // Credentials are necessary if the server requires the client
             // to authenticate before it will send email on the client's behalf.
-            client.UseDefaultCredentials = true;
-            client.EnableSsl = true;
+            //client.UseDefaultCredentials = true;
+
+            //client.UseDefaultCredentials = false;
+            //client.Credentials = new NetworkCredential(userName: "Thies", password: "Dicker1$1$1",domain: "pete.local");
+
+            client.Credentials = CredentialCache.DefaultNetworkCredentials;
+
+            client.EnableSsl = false;
 
             try
             {
