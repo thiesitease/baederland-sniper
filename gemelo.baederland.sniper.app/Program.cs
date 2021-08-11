@@ -68,9 +68,9 @@ namespace gemelo.baederland.sniper.app
 
         public static void SendEmail(string subject, string url, string content)
         {
-            string to = "reinhold@gemelo.de";
+            //string to = "reinhold@gemelo.de";
             //string to = "thies@ampelsprinter.de";
-            //string to = "baederland-sniper@tr.gemelo.de";
+            string to = "baederland-sniper@tr.gemelo.de";
             string from = "reinhold@gemelo.de";
             MailMessage message = new MailMessage(from, to);
             message.Subject = subject;
