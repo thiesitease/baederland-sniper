@@ -20,16 +20,18 @@ namespace gemelo.baederland.sniper.app
 
             while (true)
             {
-                ScanSite("https://www.baederland-shop.de/schwimmschule/bronze-23242.html");
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-                ScanSite("https://www.baederland-shop.de/schwimmschule/bronze-23243.html");
+                //ScanSiteForFreePlace("https://www.baederland-shop.de/schwimmschule/bronze-23242.html");
+                //Thread.Sleep(TimeSpan.FromSeconds(5));
+                //ScanSiteForFreePlace("https://www.baederland-shop.de/schwimmschule/bronze-23243.html");
+
+                ScanSiteForExistingCourse("https://www.baederland.de/kurse/kursfinder/?course%5Blocation%5D=&course%5Blatlng%5D=&course%5Bpool%5D%5B%5D=15&course%5Bcategory%5D%5B%5D=85&course%5Bdate%5D=");
 
                 Thread.Sleep(TimeSpan.FromMinutes(1));
             }
         }
-        private static void ScanSite(string url)
+        private static void ScanSiteForFreePlace(string url)
         {
-            Console.WriteLine("{0}: Anfrage bei: {1}",DateTime.Now, url);
+            Console.WriteLine("{0}: Anfrage bei: {1}", DateTime.Now, url);
             try
             {
                 using (var webClient = new WebClient())
@@ -66,6 +68,36 @@ namespace gemelo.baederland.sniper.app
             }
         }
 
+        private static void ScanSiteForExistingCourse(string url)
+        {
+            Console.WriteLine("{0}: ScanSiteForExistingCourse bei: {1}", DateTime.Now, url);
+            try
+            {
+                using (var webClient = new WebClient())
+                {
+                    using (Stream response = webClient.OpenRead(url))
+                    {
+                        using (StreamReader reader = new StreamReader(response))
+                        {
+                            string text = reader.ReadToEnd();
+                            string searchText = "Zu Ihrer Suche gibt es leider keine passenden Kurse";
+                            bool noCourse = text.Contains(searchText);
+                            if (!noCourse)
+                            {
+                                Console.WriteLine("Kurs gefunden: {0}", url);
+                                SendEmail("Bäderland Kurs gefunden!", url, "");
+                            }
+                        }
+                        response.Close();
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("Fehler: {0}", exp.Message);
+            }
+        }
+
         public static void SendEmail(string subject, string url, string content)
         {
             //string to = "reinhold@gemelo.de";
@@ -74,7 +106,7 @@ namespace gemelo.baederland.sniper.app
             string from = "reinhold@gemelo.de";
             MailMessage message = new MailMessage(from, to);
             message.Subject = subject;
-            message.Body = 
+            message.Body =
                 $"Lieber Bäderland Sniper Empfänger.\n\n" +
                 $"wir haben folgendes neues Ereignis für dich festgestellt:\n\n" +
                 $"{subject}\n\n" +
@@ -82,7 +114,7 @@ namespace gemelo.baederland.sniper.app
                 $"auf der URL: {url}\n\n\n" +
                 $"Herzliche Grüße\n\n" +
                 $"dein automatischer Bäderlandkursefinder";
-            
+
             SmtpClient client = new SmtpClient("PETE-MAIL2019.pete.local");
             // Credentials are necessary if the server requires the client
             // to authenticate before it will send email on the client's behalf.
@@ -98,6 +130,7 @@ namespace gemelo.baederland.sniper.app
             try
             {
                 client.Send(message);
+                Console.WriteLine("Email gesendet");
             }
             catch (Exception ex)
             {
