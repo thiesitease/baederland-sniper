@@ -20,18 +20,18 @@ namespace gemelo.baederland.sniper.app
 
             while (true)
             {
-                //ScanSiteForFreePlace("https://www.baederland-shop.de/schwimmschule/bronze-23242.html");
-                //Thread.Sleep(TimeSpan.FromSeconds(5));
-                //ScanSiteForFreePlace("https://www.baederland-shop.de/schwimmschule/bronze-23243.html");
+                ScanSiteForFreePlace("https://www.baederland-shop.de/schwimmschule/bronze-23323.html");
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+                ScanSiteForFreePlace("https://www.baederland-shop.de/schwimmschule/bronze-23324.html");
 
-                ScanSiteForExistingCourse("https://www.baederland.de/kurse/kursfinder/?course%5Blocation%5D=&course%5Blatlng%5D=&course%5Bpool%5D%5B%5D=15&course%5Bcategory%5D%5B%5D=85&course%5Bdate%5D=");
+                //ScanSiteForExistingCourse("https://www.baederland.de/kurse/kursfinder/?course%5Blocation%5D=&course%5Blatlng%5D=&course%5Bpool%5D%5B%5D=15&course%5Bcategory%5D%5B%5D=85&course%5Bdate%5D=");
 
                 Thread.Sleep(TimeSpan.FromMinutes(1));
             }
         }
         private static void ScanSiteForFreePlace(string url)
         {
-            Console.WriteLine("{0}: Anfrage bei: {1}", DateTime.Now, url);
+            Console.WriteLine("{0}:ScanSiteForFreePlace Anfrage bei: {1}", DateTime.Now, url);
             try
             {
                 using (var webClient = new WebClient())
@@ -52,7 +52,7 @@ namespace gemelo.baederland.sniper.app
                             int length = Math.Min(1000, posEnd - posStart);
                             string content = text.SecureSubstring(posStart, length).Trim();
                             string numberString = content.SecureSubstring(startIndex: 0, length: 5).Trim();
-                            if (numberString[0] != '0')
+                            if (numberString[0] != '0' && numberString != "-1")
                             {
                                 Console.WriteLine("Platz gefunden: {0}, {1}", content, url);
                                 SendEmail("Bäderland Platz gefunden!", url, content);
